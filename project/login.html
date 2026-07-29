@@ -206,7 +206,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     try {
 
         // Change this URL to your Render URL after deployment
-        const response = await fetch("https://studenthub-4-7gyg.onrender.com/", {
+        const response = await fetch("https://studenthub-4-7gyg.onrender.com/api/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
