@@ -5,7 +5,9 @@ const User = require("../models/User");
 const router = express.Router();
 
 
-// SIGN UP
+// =======================
+// SIGNUP
+// =======================
 
 router.post("/signup", async (req, res) => {
 
@@ -17,6 +19,7 @@ router.post("/signup", async (req, res) => {
 
         if (exist) {
             return res.status(400).json({
+                success: false,
                 message: "User already exists"
             });
         }
@@ -32,12 +35,14 @@ router.post("/signup", async (req, res) => {
         await user.save();
 
         res.status(201).json({
+            success: true,
             message: "Signup Successful"
         });
 
     } catch (err) {
 
         res.status(500).json({
+            success: false,
             message: err.message
         });
 
@@ -46,7 +51,9 @@ router.post("/signup", async (req, res) => {
 });
 
 
+// =======================
 // LOGIN
+// =======================
 
 router.post("/login", async (req, res) => {
 
@@ -54,34 +61,53 @@ router.post("/login", async (req, res) => {
 
         const { email, password } = req.body;
 
+        // Check User
         const user = await User.findOne({ email });
 
         if (!user) {
 
             return res.status(400).json({
+                success: false,
                 message: "User not found"
             });
 
         }
 
+        // Check Password
         const match = await bcrypt.compare(password, user.password);
 
         if (!match) {
 
             return res.status(400).json({
+                success: false,
                 message: "Incorrect Password"
             });
 
         }
 
-        res.json({
-            message: "Login Successful"
+        // Login Success
+        res.status(200).json({
+
+            success: true,
+            message: "Login Successful",
+
+            user: {
+
+                id: user._id,
+                name: user.name,
+                email: user.email
+
+            }
+
         });
 
     } catch (err) {
 
         res.status(500).json({
+
+            success: false,
             message: err.message
+
         });
 
     }
