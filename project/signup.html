@@ -6,12 +6,11 @@
 <title>Sign Up</title>
 
 <style>
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
@@ -75,6 +74,7 @@ body{
     top:13px;
     cursor:pointer;
     color:#007bff;
+    font-size:14px;
 }
 
 .signup-btn{
@@ -101,11 +101,9 @@ body{
     color:#007bff;
     text-decoration:none;
 }
-
 </style>
 
 </head>
-
 <body>
 
 <div class="signup-container">
@@ -117,31 +115,24 @@ body{
 <form id="signupForm">
 
 <div class="input-group">
-
 <label>Full Name</label>
-
 <input
 type="text"
 id="name"
 placeholder="Enter your full name"
 required>
-
 </div>
 
 <div class="input-group">
-
 <label>Email</label>
-
 <input
 type="email"
 id="email"
 placeholder="Enter your email"
 required>
-
 </div>
 
 <div class="input-group">
-
 <label>Password</label>
 
 <div class="password-box">
@@ -152,36 +143,28 @@ id="password"
 placeholder="Create Password"
 required>
 
-<span onclick="togglePassword(this)">Show</span>
+<span onclick="togglePassword()">Show</span>
 
 </div>
 
 </div>
 
 <div class="input-group">
-
 <label>Confirm Password</label>
-
 <input
 type="password"
 id="confirmPassword"
 placeholder="Confirm Password"
 required>
-
 </div>
 
 <button type="submit" class="signup-btn">
-
 Create Account
-
 </button>
 
 <div class="login-link">
-
 Already have an account?
-
 <a href="login.html">Login</a>
-
 </div>
 
 </form>
@@ -190,89 +173,74 @@ Already have an account?
 
 <script>
 
-function togglePassword(element){
+function togglePassword(){
 
-const password=document.getElementById("password");
+    const password=document.getElementById("password");
+    const btn=document.querySelector(".password-box span");
 
-if(password.type==="password"){
-
-password.type="text";
-element.innerHTML="Hide";
-
-}else{
-
-password.type="password";
-element.innerHTML="Show";
-
-}
+    if(password.type==="password"){
+        password.type="text";
+        btn.innerHTML="Hide";
+    }else{
+        password.type="password";
+        btn.innerHTML="Show";
+    }
 
 }
 
 document.getElementById("signupForm").addEventListener("submit",async function(e){
 
-e.preventDefault();
+    e.preventDefault();
 
-const name=document.getElementById("name").value;
+    const name=document.getElementById("name").value.trim();
+    const email=document.getElementById("email").value.trim();
+    const password=document.getElementById("password").value;
+    const confirmPassword=document.getElementById("confirmPassword").value;
 
-const email=document.getElementById("email").value;
+    if(password!==confirmPassword){
+        alert("Passwords do not match");
+        return;
+    }
 
-const password=document.getElementById("password").value;
+    try{
 
-const confirmPassword=document.getElementById("confirmPassword").value;
+        const response=await fetch("https://studenthub-4-7gyg.onrender.com/api/auth/signup",{
 
-if(password!==confirmPassword){
+            method:"POST",
 
-alert("Passwords do not match");
+            headers:{
+                "Content-Type":"application/json"
+            },
 
-return;
+            body:JSON.stringify({
+                name:name,
+                email:email,
+                password:password
+            })
 
-}
+        });
 
-try{
+        const data=await response.json();
 
-const response=await fetch("http://localhost:5000/api/auth/signup",{
+        if(response.ok){
 
-method:"POST",
+            alert(data.message || "Signup Successful!");
 
-headers:{
+            window.location.href="login.html";
 
-"Content-Type":"application/json"
+        }else{
 
-},
+            alert(data.message || "Signup Failed");
 
-body:JSON.stringify({
+        }
 
-name:name,
+    }catch(error){
 
-email:email,
+        console.error(error);
 
-password:password
+        alert("Unable to connect to server.");
 
-})
-
-});
-
-const data=await response.json();
-
-if(data.success){
-
-alert(data.message);
-
-window.location.href="dashboard.html";
-
-}else{
-
-alert(data.message);
-
-}
-
-}catch(error){
-
-console.log(error);
-
-alert("Unable to connect to server.");
-
-}
+    }
 
 });
 
