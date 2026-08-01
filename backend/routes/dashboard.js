@@ -1,5 +1,6 @@
-// routes/dashboard.js - Updated with Skill-Based Peer Matching API
+// routes/dashboard.js - Updated with Safe ObjectId Validation
 const express = require("express");
+const mongoose = require("mongoose");
 const User = require("../models/User");
 
 const router = express.Router();
@@ -9,6 +10,10 @@ const router = express.Router();
 // =======================
 router.put("/update/:id", async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: "Invalid user ID format" });
+        }
+
         const { name, email, age, college, skills, avatar } = req.body;
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -51,6 +56,11 @@ router.put("/update/:id", async (req, res) => {
 // =======================
 router.get("/peers/:id", async (req, res) => {
     try {
+        // Validate MongoDB ObjectId to prevent server crash on malformed IDs
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: "Invalid user ID format" });
+        }
+
         const currentUser = await User.findById(req.params.id);
         if (!currentUser) {
             return res.status(404).json({ success: false, message: "User not found" });
