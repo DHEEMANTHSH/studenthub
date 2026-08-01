@@ -15,11 +15,6 @@ body.dark-mode {
     background:#0f172a;
     color:#f8fafc;
 }
-body.dark-mode .content-card,
-body.dark-mode .navbar,
-body.dark-mode .sidebar {
-    /* Keeping distinct structural colors but adjusting for dark mode */
-}
 body.dark-mode .content-card {
     background:#1e293b;
     color:#f8fafc;
@@ -238,7 +233,7 @@ body.dark-mode input {
 </div>
 
 <script>
-const user = JSON.parse(localStorage.getItem("user"));
+let user = JSON.parse(localStorage.getItem("user"));
 if(user){
     updateUI(user);
 }else{
@@ -270,7 +265,7 @@ function toggleEditMode() {
         form.style.display = "block";
         btn.innerText = "Cancel";
         
-        // Populate inputs
+        // Populate inputs correctly from current session user object
         document.getElementById("editName").value = user.name || "";
         document.getElementById("editEmail").value = user.email || "";
         document.getElementById("editAge").value = user.age || "";
@@ -279,27 +274,74 @@ function toggleEditMode() {
     }
 }
 
-function saveProfileChanges() {
-    user.name = document.getElementById("editName").value;
-    user.email = document.getElementById("editEmail").value;
-    user.age = document.getElementById("editAge").value;
-    user.college = document.getElementById("editCollege").value;
-    user.skills = document.getElementById("editSkills").value;
+async function saveProfileChanges() {
+    const updatedName = document.getElementById("editName").value;
+    const updatedEmail = document.getElementById("editEmail").value;
+    const updatedAge = document.getElementById("editAge").value;
+    const updatedCollege = document.getElementById("editCollege").value;
+    const updatedSkills = document.getElementById("editSkills").value;
 
-    localStorage.setItem("user", JSON.stringify(user));
-    updateUI(user);
-    toggleEditMode();
-    alert("Profile updated successfully!");
+    try {
+        const response = await fetch(`http://localhost:5000/api/dashboard/update/${user.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: updatedName,
+                email: updatedEmail,
+                age: updatedAge ? Number(updatedAge) : null,
+                college: updatedCollege,
+                skills: updatedSkills,
+                avatar: user.avatar || ""
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            alert(data.message);
+            // Update local storage user object with backend response data
+            user = data.user;
+            localStorage.setItem("user", JSON.stringify(user));
+            updateUI(user);
+            toggleEditMode();
+        } else {
+            alert(data.message || "Failed to update profile.");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Unable to connect to server.");
+    }
 }
 
 function previewAvatar(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             const base64Image = e.target.result;
             document.getElementById("profileAvatar").src = base64Image;
             user.avatar = base64Image;
+            
+            // Sync avatar update to backend
+            try {
+                await fetch(`http://localhost:5000/api/dashboard/update/${user.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: user.name,
+                        email: user.email,
+                        age: user.age,
+                        college: user.college,
+                        skills: user.skills,
+                        avatar: base64Image
+                    })
+                });
+            } catch (err) {
+                console.error("Avatar sync error:", err);
+            }
+
             localStorage.setItem("user", JSON.stringify(user));
         }
         reader.readAsDataURL(file);
