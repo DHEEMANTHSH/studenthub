@@ -476,7 +476,7 @@ async function sendMessage() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     try {
-        const response = await fetch("http://localhost:5000/api/dashboard/chat", {
+        const response = await fetch("https://studenthub-4-7gyg.onrender.com/api/auth/dashboard/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
