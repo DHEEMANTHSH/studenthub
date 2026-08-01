@@ -108,12 +108,13 @@ body{
 
 <div class="signup-container">
 
-<h2>Create Account</h2>
+<h2 id="formTitle">Create Account</h2>
 
-<p>Register your account</p>
+<p id="formSubtitle">Register your account</p>
 
 <form id="signupForm">
 
+<div id="step1Fields">
 <div class="input-group">
 <label>Full Name</label>
 <input
@@ -157,12 +158,39 @@ id="confirmPassword"
 placeholder="Confirm Password"
 required>
 </div>
+</div>
 
-<button type="submit" class="signup-btn">
+<div id="step2Fields" style="display:none;">
+<div class="input-group">
+<label>Age</label>
+<input
+type="number"
+id="age"
+placeholder="Enter your age">
+</div>
+
+<div class="input-group">
+<label>College</label>
+<input
+type="text"
+id="college"
+placeholder="Enter your college name">
+</div>
+
+<div class="input-group">
+<label>Skills</label>
+<input
+type="text"
+id="skills"
+placeholder="e.g. JavaScript, Python, React">
+</div>
+</div>
+
+<button type="submit" class="signup-btn" id="submitBtn">
 Create Account
 </button>
 
-<div class="login-link">
+<div class="login-link" id="loginLinkContainer">
 Already have an account?
 <a href="login.html">Login</a>
 </div>
@@ -172,6 +200,10 @@ Already have an account?
 </div>
 
 <script>
+let currentStep = 1;
+let savedName = "";
+let savedEmail = "";
+let savedPassword = "";
 
 function togglePassword(){
 
@@ -192,15 +224,36 @@ document.getElementById("signupForm").addEventListener("submit",async function(e
 
     e.preventDefault();
 
-    const name=document.getElementById("name").value.trim();
-    const email=document.getElementById("email").value.trim();
-    const password=document.getElementById("password").value;
-    const confirmPassword=document.getElementById("confirmPassword").value;
+    if(currentStep === 1) {
+        const name=document.getElementById("name").value.trim();
+        const email=document.getElementById("email").value.trim();
+        const password=document.getElementById("password").value;
+        const confirmPassword=document.getElementById("confirmPassword").value;
 
-    if(password!==confirmPassword){
-        alert("Passwords do not match");
+        if(password!==confirmPassword){
+            alert("Passwords do not match");
+            return;
+        }
+
+        savedName = name;
+        savedEmail = email;
+        savedPassword = password;
+
+        // Switch view to step 2 without changing original form validation/structure logic style
+        document.getElementById("step1Fields").style.display = "none";
+        document.getElementById("step2Fields").style.display = "block";
+        document.getElementById("formTitle").innerText = "Additional Details";
+        document.getElementById("formSubtitle").innerText = "Tell us a bit more about yourself";
+        document.getElementById("submitBtn").innerText = "Complete Registration";
+        document.getElementById("loginLinkContainer").style.display = "none";
+        currentStep = 2;
         return;
     }
+
+    // Step 2 Submission
+    const age = document.getElementById("age").value.trim();
+    const college = document.getElementById("college").value.trim();
+    const skills = document.getElementById("skills").value.trim();
 
     try{
 
@@ -213,9 +266,12 @@ document.getElementById("signupForm").addEventListener("submit",async function(e
             },
 
             body:JSON.stringify({
-                name:name,
-                email:email,
-                password:password
+                name: savedName,
+                email: savedEmail,
+                password: savedPassword,
+                age: age,
+                college: college,
+                skills: skills
             })
 
         });

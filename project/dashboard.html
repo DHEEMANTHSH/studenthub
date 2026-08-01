@@ -1,12 +1,12 @@
+<!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
+<title>Student Hub - Dashboard</title>
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -19,10 +19,9 @@ body{
 }
 
 /* Navbar */
-
 .navbar{
     height:70px;
-    background:#4facfe;
+    background:#3b82f6;
     color:white;
     display:flex;
     justify-content:space-between;
@@ -33,6 +32,7 @@ body{
     top:0;
     left:0;
     box-shadow:0 3px 10px rgba(0,0,0,.2);
+    z-index: 1000;
 }
 
 .navbar h2{
@@ -41,7 +41,7 @@ body{
 
 .logout{
     background:white;
-    color:#4facfe;
+    color:#3b82f6;
     border:none;
     padding:10px 18px;
     border-radius:6px;
@@ -54,14 +54,13 @@ body{
 }
 
 /* Sidebar */
-
 .sidebar{
     position:fixed;
     top:70px;
     left:0;
     width:220px;
     height:100%;
-    background:#2c3e50;
+    background:#1e293b;
     padding-top:20px;
 }
 
@@ -74,11 +73,10 @@ body{
 }
 
 .sidebar a:hover{
-    background:#34495e;
+    background:#334155;
 }
 
 /* Main */
-
 .main{
     margin-left:220px;
     margin-top:70px;
@@ -117,8 +115,137 @@ body{
 }
 
 .card h2{
-    color:#4facfe;
+    color:#3b82f6;
     margin-bottom:10px;
+}
+
+/* New Grid Sections for Leaderboard, Peer Matching, & Chatbot */
+.dashboard-grid {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.dash-widget {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+}
+
+.dash-widget h2 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 18px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 8px;
+}
+
+/* Leaderboard Highlight */
+.leader-item {
+    display: flex;
+    align-items: center;
+    background: #eff6ff;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+}
+
+.leader-badge {
+    font-size: 24px;
+    margin-right: 15px;
+}
+
+.leader-info h4 {
+    color: #1e3a8a;
+    font-size: 16px;
+}
+
+.leader-info p {
+    color: #475569;
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+/* Skill Matching */
+.match-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.match-item:last-child {
+    border-bottom: none;
+}
+
+.match-item h4 {
+    color: #334155;
+    font-size: 14px;
+}
+
+.match-item p {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+/* Chatbot Widget Styles */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 200px;
+}
+
+.chat-messages {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.chat-message {
+    margin-bottom: 8px;
+}
+
+.chat-message.bot {
+    color: #1e293b;
+}
+
+.chat-message.user {
+    color: #2563eb;
+    text-align: right;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.chat-input-area button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.chat-input-area button:hover {
+    background: #2563eb;
 }
 
 .activity{
@@ -131,6 +258,7 @@ body{
 
 .activity h2{
     margin-bottom:20px;
+    color:#333;
 }
 
 table{
@@ -146,173 +274,203 @@ table td{
 }
 
 table th{
-    background:#4facfe;
+    background:#3b82f6;
     color:white;
 }
 
 @media(max-width:768px){
-
 .sidebar{
     width:180px;
 }
-
 .main{
     margin-left:180px;
 }
-
 }
 
 @media(max-width:600px){
-
 .sidebar{
     display:none;
 }
-
 .main{
     margin-left:0;
 }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
 <!-- Navbar -->
-
 <div class="navbar">
-
-<h2>My Dashboard</h2>
-
-<button class="logout" onclick="logout()">
-Logout
-</button>
-
+<h2>Student Hub</h2>
+<button class="logout" onclick="logout()">Logout</button>
 </div>
 
 <!-- Sidebar -->
-
 <div class="sidebar">
-
-<a href="#">🏠 Dashboard</a>
-<a href="#">👤 Profile</a>
-<a href="#">📁 Projects</a>
-<a href="#">📄 Reports</a>
-<a href="#">⚙ Settings</a>
-<a href="#">📞 Contact</a>
-
+<a href="dashboard.html">🏠 Dashboard</a>
+<a href="profile.html">👤 My Profile</a>
+<a href="courses.html">📚 Enrolled Courses</a>
+<a href="assignments.html">📝 Assignments</a>
+<a href="grades.html">📊 Grades & Reports</a>
+<a href="settings.html">⚙ Settings</a>
 </div>
 
 <!-- Main -->
-
 <div class="main">
-
 <div class="welcome">
-
 <h1 id="welcome"></h1>
-
-<p>You have successfully logged into your account.</p>
-
+<p>Welcome back to your Student Hub learning portal.</p>
 </div>
 
 <div class="cards">
-
-<div class="card">
-<h2>12</h2>
-<p>Total Projects</p>
-</div>
-
-<div class="card">
-<h2>8</h2>
-<p>Completed Tasks</p>
-</div>
-
 <div class="card">
 <h2>5</h2>
-<p>Pending Tasks</p>
+<p>Enrolled Courses</p>
+</div>
+<div class="card">
+<h2>3</h2>
+<p>Pending Assignments</p>
+</div>
+<div class="card">
+<h2>12</h2>
+<p>Completed Lessons</p>
+</div>
+<div class="card">
+<h2>94%</h2>
+<p>Attendance Rate</p>
+</div>
 </div>
 
-<div class="card">
-<h2>20</h2>
-<p>Notifications</p>
-</div>
+<!-- Extra Features Grid: Leaderboard, Skill Matching, Chatbot -->
+<div class="dashboard-grid">
+    
+    <!-- 1. Leaderboard Rank #1 -->
+    <div class="dash-widget">
+        <h2>🏆 Leaderboard Star</h2>
+        <div class="leader-item">
+            <div class="leader-badge">🥇</div>
+            <div class="leader-info">
+                <h4>Alex Morgan</h4>
+                <p>Score: 2,480 pts • Web Development Track</p>
+            </div>
+        </div>
+        <p style="font-size: 12px; color: #64748b; margin-top: 12px;">Ranked #1 out of 450 active students this month.</p>
+    </div>
+
+    <!-- 2. Skill Profile Matching -->
+    <div class="dash-widget">
+        <h2>👥 Skill-Based Peers</h2>
+        <div class="match-item">
+            <h4>Sarah Jenkins</h4>
+            <p>Matched Skills: JavaScript, React, UI/UX</p>
+        </div>
+        <div class="match-item">
+            <h4>Liam Chen</h4>
+            <p>Matched Skills: Data Structures, Python</p>
+        </div>
+    </div>
+
+    <!-- 3. Chatbot Assistant Update -->
+    <div class="dash-widget">
+        <h2>🤖 HubBot Assistant</h2>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot"><strong>HubBot:</strong> Hello! How can I assist with your studies today?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
 
 </div>
 
 <div class="activity">
-
-<h2>Recent Activity</h2>
-
+<h2>Recent Student Activity</h2>
 <table>
-
 <tr>
 <th>Date</th>
 <th>Activity</th>
 <th>Status</th>
 </tr>
-
 <tr>
-<td>27 July 2026</td>
-<td>User Logged In</td>
-<td>Success</td>
-</tr>
-
-<tr>
-<td>27 July 2026</td>
-<td>Profile Updated</td>
+<td>1 August 2026</td>
+<td>Submitted Web Development Assignment</td>
 <td>Completed</td>
 </tr>
-
 <tr>
-<td>26 July 2026</td>
-<td>Password Changed</td>
-<td>Completed</td>
+<td>30 July 2026</td>
+<td>Joined Live Class: Data Structures</td>
+<td>Attended</td>
 </tr>
-
+<tr>
+<td>28 July 2026</td>
+<td>Completed Quiz on JavaScript Basics</td>
+<td>Passed (95%)</td>
+</tr>
 <tr>
 <td>25 July 2026</td>
-<td>New Account Created</td>
+<td>Logged into Student Hub Platform</td>
 <td>Success</td>
 </tr>
-
 </table>
-
 </div>
-
 </div>
 
 <script>
-
-// Get user from localStorage
 const user = JSON.parse(localStorage.getItem("user"));
-
-// Check login
 if(user){
-
-document.getElementById("welcome").innerHTML =
-"Welcome, " + user.name + " 👋";
-
+document.getElementById("welcome").innerHTML = "Welcome, " + (user.name || "Student") + " 👋";
 }else{
-
 alert("Please login first.");
-
 window.location.href = "login.html";
-
 }
 
-// Logout
 function logout(){
-
 localStorage.removeItem("user");
-
 alert("Logged Out Successfully");
-
 window.location.href="login.html";
-
 }
 
+// Chatbot functionality
+function sendMessage() {
+    const inputField = document.getElementById("chatInput");
+    const messageText = inputField.value.trim();
+    if(messageText === "") return;
+
+    const chatMessages = document.getElementById("chatMessages");
+    
+    // Append User Message
+    chatMessages.innerHTML += `<div class="chat-message user"><strong>You:</strong> ${messageText}</div>`;
+    inputField.value = "";
+    
+    // Auto scroll down
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Simulate Bot Response after a short delay
+    setTimeout(() => {
+        let botReply = "I am here to help you navigate courses and assignments!";
+        const lower = messageText.toLowerCase();
+        if(lower.includes("assignment")) {
+            botReply = "You have 3 pending assignments due soon. Check the Assignments tab!";
+        } else if(lower.includes("grade") || lower.includes("score")) {
+            botReply = "You can view your detailed performance under the Grades & Reports section.";
+        } else if(lower.includes("hello") || lower.includes("hi")) {
+            botReply = "Hello there! Ready to learn something new today?";
+        }
+
+        chatMessages.innerHTML += `<div class="chat-message bot"><strong>HubBot:</strong> ${botReply}</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 600);
+}
+
+function handleKeyPress(event) {
+    if(event.key === 'Enter') {
+        sendMessage();
+    }
+}
 </script>
 
 </body>
