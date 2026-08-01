@@ -10,7 +10,6 @@ const router = express.Router();
 // =======================
 router.post("/signup", async (req, res) => {
     try {
-        // Explicitly destructure all fields sent from the frontend step-2 form
         const { name, email, password, age, college, skills } = req.body;
 
         const exist = await User.findOne({ email });
@@ -24,7 +23,6 @@ router.post("/signup", async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Save user including extra profile fields
         const user = new User({
             name,
             email,
@@ -48,6 +46,7 @@ router.post("/signup", async (req, res) => {
         });
     }
 });
+
 
 // =======================
 // LOGIN
@@ -76,7 +75,7 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        // Login Success (Passing complete user metadata to frontend session)
+        // Login Success (Including Age, College, Skills, and Avatar fields)
         res.status(200).json({
             success: true,
             message: "Login Successful",
