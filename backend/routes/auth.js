@@ -5,15 +5,12 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-
 // =======================
 // SIGNUP
 // =======================
-
 router.post("/signup", async (req, res) => {
-
     try {
-
+        // Explicitly destructure all fields sent from the frontend step-2 form
         const { name, email, password, age, college, skills } = req.body;
 
         const exist = await User.findOne({ email });
@@ -27,6 +24,7 @@ router.post("/signup", async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Save user including extra profile fields
         const user = new User({
             name,
             email,
@@ -44,59 +42,45 @@ router.post("/signup", async (req, res) => {
         });
 
     } catch (err) {
-
         res.status(500).json({
             success: false,
             message: err.message
         });
-
     }
-
 });
-
 
 // =======================
 // LOGIN
 // =======================
-
 router.post("/login", async (req, res) => {
-
     try {
-
         const { email, password } = req.body;
 
         // Check User
         const user = await User.findOne({ email });
 
         if (!user) {
-
             return res.status(400).json({
                 success: false,
                 message: "User not found"
             });
-
         }
 
         // Check Password
         const match = await bcrypt.compare(password, user.password);
 
         if (!match) {
-
             return res.status(400).json({
                 success: false,
                 message: "Incorrect Password"
             });
-
         }
 
-        // Login Success (Including Age, College, Skills, and Avatar fields)
+        // Login Success (Passing complete user metadata to frontend session)
         res.status(200).json({
-
             success: true,
             message: "Login Successful",
-
             user: {
-
                 id: user._id,
                 name: user.name,
                 email: user.email,
@@ -104,22 +88,15 @@ router.post("/login", async (req, res) => {
                 college: user.college,
                 skills: user.skills,
                 avatar: user.avatar
-
             }
-
         });
 
     } catch (err) {
-
         res.status(500).json({
-
             success: false,
             message: err.message
-
         });
-
     }
-
 });
 
 module.exports = router;

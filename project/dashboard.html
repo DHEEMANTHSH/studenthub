@@ -119,7 +119,7 @@ body{
     margin-bottom:10px;
 }
 
-/* New Grid Sections for Leaderboard, Peer Matching, & Chatbot */
+/* Dashboard Grid Sections */
 .dashboard-grid {
     margin-top: 30px;
     display: grid;
@@ -168,7 +168,12 @@ body{
     margin-top: 2px;
 }
 
-/* Skill Matching */
+/* Dynamic Skill Matching Container */
+.match-container {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
 .match-item {
     padding: 10px 0;
     border-bottom: 1px solid #f1f5f9;
@@ -358,16 +363,11 @@ table th{
         <p style="font-size: 12px; color: #64748b; margin-top: 12px;">Ranked #1 out of 450 active students this month.</p>
     </div>
 
-    <!-- 2. Skill Profile Matching -->
+    <!-- 2. Dynamic Skill Profile Matching widget -->
     <div class="dash-widget">
         <h2>👥 Skill-Based Peers</h2>
-        <div class="match-item">
-            <h4>Sarah Jenkins</h4>
-            <p>Matched Skills: JavaScript, React, UI/UX</p>
-        </div>
-        <div class="match-item">
-            <h4>Liam Chen</h4>
-            <p>Matched Skills: Data Structures, Python</p>
+        <div class="match-container" id="peerMatchesContainer">
+            <p style="font-size: 13px; color: #64748b;">Loading matching peers...</p>
         </div>
     </div>
 
@@ -422,16 +422,44 @@ table th{
 <script>
 const user = JSON.parse(localStorage.getItem("user"));
 if(user){
-document.getElementById("welcome").innerHTML = "Welcome, " + (user.name || "Student") + " 👋";
+    document.getElementById("welcome").innerHTML = "Welcome, " + (user.name || "Student") + " 👋";
+    fetchMatchedPeers(user.id);
 }else{
-alert("Please login first.");
-window.location.href = "login.html";
+    alert("Please login first.");
+    window.location.href = "login.html";
 }
 
 function logout(){
-localStorage.removeItem("user");
-alert("Logged Out Successfully");
-window.location.href="login.html";
+    localStorage.removeItem("user");
+    alert("Logged Out Successfully");
+    window.location.href="login.html";
+}
+
+// Fetch matching peers from backend API
+async function fetchMatchedPeers(userId) {
+    try {
+        const response = await fetch(`http://localhost:5000/api/dashboard/peers/${userId}`);
+        const data = await response.json();
+        const container = document.getElementById("peerMatchesContainer");
+
+        if(data.success && data.peers.length > 0) {
+            container.innerHTML = "";
+            data.peers.forEach(peer => {
+                container.innerHTML += `
+                    <div class="match-item">
+                        <h4>${peer.name} ${peer.college ? '(' + peer.college + ')' : ''}</h4>
+                        <p><strong>Skills:</strong> ${peer.skills || "None listed"}</p>
+                        <p style="color: #2563eb;"><strong>Matching Skills:</strong> ${peer.matchedSkillsList || "General peer"}</p>
+                    </div>
+                `;
+            });
+        } else {
+            container.innerHTML = `<p style="font-size: 13px; color: #64748b;">No matching peers found based on skills yet.</p>`;
+        }
+    } catch (error) {
+        console.error("Error fetching peers:", error);
+        document.getElementById("peerMatchesContainer").innerHTML = `<p style="font-size: 13px; color: #dc2626;">Unable to load peer matches.</p>`;
+    }
 }
 
 // Connected Backend Chatbot functionality
