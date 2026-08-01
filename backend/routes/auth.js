@@ -1,3 +1,4 @@
+// routes/auth.js - Updated Authentication Routes (Supporting Age, College, Skills, Avatar)
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
@@ -13,7 +14,7 @@ router.post("/signup", async (req, res) => {
 
     try {
 
-        const { name, email, password } = req.body;
+        const { name, email, password, age, college, skills } = req.body;
 
         const exist = await User.findOne({ email });
 
@@ -29,7 +30,10 @@ router.post("/signup", async (req, res) => {
         const user = new User({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            age: age || null,
+            college: college || "",
+            skills: skills || ""
         });
 
         await user.save();
@@ -85,7 +89,7 @@ router.post("/login", async (req, res) => {
 
         }
 
-        // Login Success
+        // Login Success (Including Age, College, Skills, and Avatar fields)
         res.status(200).json({
 
             success: true,
@@ -95,7 +99,11 @@ router.post("/login", async (req, res) => {
 
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                age: user.age,
+                college: user.college,
+                skills: user.skills,
+                avatar: user.avatar
 
             }
 

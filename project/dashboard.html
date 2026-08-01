@@ -371,7 +371,7 @@ table th{
         </div>
     </div>
 
-    <!-- 3. Chatbot Assistant Update -->
+    <!-- 3. Chatbot Assistant Update Connected to Backend -->
     <div class="dash-widget">
         <h2>🤖 HubBot Assistant</h2>
         <div class="chat-container">
@@ -434,8 +434,8 @@ alert("Logged Out Successfully");
 window.location.href="login.html";
 }
 
-// Chatbot functionality
-function sendMessage() {
+// Connected Backend Chatbot functionality
+async function sendMessage() {
     const inputField = document.getElementById("chatInput");
     const messageText = inputField.value.trim();
     if(messageText === "") return;
@@ -445,25 +445,27 @@ function sendMessage() {
     // Append User Message
     chatMessages.innerHTML += `<div class="chat-message user"><strong>You:</strong> ${messageText}</div>`;
     inputField.value = "";
-    
-    // Auto scroll down
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Simulate Bot Response after a short delay
-    setTimeout(() => {
-        let botReply = "I am here to help you navigate courses and assignments!";
-        const lower = messageText.toLowerCase();
-        if(lower.includes("assignment")) {
-            botReply = "You have 3 pending assignments due soon. Check the Assignments tab!";
-        } else if(lower.includes("grade") || lower.includes("score")) {
-            botReply = "You can view your detailed performance under the Grades & Reports section.";
-        } else if(lower.includes("hello") || lower.includes("hi")) {
-            botReply = "Hello there! Ready to learn something new today?";
-        }
+    try {
+        const response = await fetch("http://localhost:5000/api/dashboard/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: messageText })
+        });
+
+        const data = await response.json();
+        let botReply = data.success ? data.reply : "I am here to help you navigate courses and assignments!";
 
         chatMessages.innerHTML += `<div class="chat-message bot"><strong>HubBot:</strong> ${botReply}</div>`;
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 600);
+    } catch (error) {
+        console.error(error);
+        chatMessages.innerHTML += `<div class="chat-message bot"><strong>HubBot:</strong> Server error connecting to assistant.</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
 }
 
 function handleKeyPress(event) {
