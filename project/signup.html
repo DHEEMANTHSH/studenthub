@@ -236,7 +236,7 @@ document.getElementById("signupForm").addEventListener("submit",async function(e
         savedEmail = email;
         savedPassword = password;
 
-        // Switch view to step 2
+        // Switch to step 2 inputs view
         document.getElementById("step1Fields").style.display = "none";
         document.getElementById("step2Fields").style.display = "block";
         document.getElementById("formTitle").innerText = "Additional Details";
@@ -247,7 +247,7 @@ document.getElementById("signupForm").addEventListener("submit",async function(e
         return;
     }
 
-    // Step 2 Submission (Age, College, Skills)
+    // Step 2 Submission - Explicitly reading age, college, and skills
     const age = document.getElementById("age").value.trim();
     const college = document.getElementById("college").value.trim();
     const skills = document.getElementById("skills").value.trim();
