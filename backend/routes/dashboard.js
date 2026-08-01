@@ -1,4 +1,4 @@
-// routes/dashboard.js - Updated with backend chatbot integration supporting the frontend HubBot
+// routes/dashboard.js - Updated with Skill-Based Peer Matching API
 const express = require("express");
 const User = require("../models/User");
 
@@ -36,6 +36,61 @@ router.put("/update/:id", async (req, res) => {
                 skills: updatedUser.skills,
                 avatar: updatedUser.avatar
             }
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+});
+
+// =======================
+// SKILL-BASED PEER MATCHING API
+// =======================
+router.get("/peers/:id", async (req, res) => {
+    try {
+        const currentUser = await User.findById(req.params.id);
+        if (!currentUser) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const userSkills = (currentUser.skills || "")
+            .toLowerCase()
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+
+        // Find other users in the database
+        const allUsers = await User.find({ _id: { $ne: currentUser._id } });
+
+        // Score peers based on matching skills
+        const matchedPeers = allUsers.map(peer => {
+            const peerSkills = (peer.skills || "")
+                .toLowerCase()
+                .split(",")
+                .map(s => s.trim())
+                .filter(Boolean);
+
+            const commonSkills = peerSkills.filter(skill => userSkills.includes(skill));
+
+            return {
+                id: peer._id,
+                name: peer.name,
+                college: peer.college,
+                skills: peer.skills,
+                matchCount: commonSkills.length,
+                matchedSkillsList: commonSkills.join(", ")
+            };
+        });
+
+        // Sort by highest matching skills count
+        matchedPeers.sort((a, b) => b.matchCount - a.matchCount);
+
+        res.status(200).json({
+            success: true,
+            peers: matchedPeers.slice(0, 5) // Return top 5 matched peers
         });
 
     } catch (err) {
